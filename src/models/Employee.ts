@@ -1,57 +1,48 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface Employee extends Document {
-  employeeId: string;
-  name: string;
-  email: string;
-  department?: string;
-  designation?: string;
-  profilePhoto?: string;
-  isAdmin: boolean; // New field
-  password: string; // Employee ID is used as password
+    name: string;
+    email: string;
+    designation: mongoose.Schema.Types.ObjectId; // Reference to Designation
+    department: mongoose.Schema.Types.ObjectId; // Reference to Department
+    casualLeavesUsed: number; // Count of used casual leaves in the current month
+    sickLeavesUsed: number; // Count of used sick leaves
 }
 
 const EmployeeSchema: Schema<Employee> = new mongoose.Schema({
-  employeeId: {
-    type: String,
-    required: [true, 'Employee ID is required'],
-    unique: true,
-    trim: true,
-  },
-  name: {
-    type: String,
-    required: [true, 'Name is required'],
-    trim: true,
-  },
-  email: {
-    type: String,
-    required: [true, 'Email is required'],
-    unique: true,
-    match: [/.+\@.+\..+/, 'Please use a valid email address'],
-  },
-  department: {
-    type: String,
-    required: [true, 'Department is required'],
-  },
-  designation: {
-    type: String,
-    required: [true, 'Designation is required'],
-  },
-  profilePhoto: {
-    type: String,
-  },
-  isAdmin: {
-    type: Boolean,
-    default: false, // Regular employees are not admins by default
-  },
-  password: {
-    type: String,
-    required: [true, 'Password is required'],
-  },
+    name: {
+        type: String,
+        required: [true, 'Employee name is required'],
+        trim: true,
+    },
+    email: {
+        type: String,
+        required: [true, 'Employee email is required'],
+        unique: true,
+        trim: true,
+    },
+    designation: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Designation',
+        required: [true, 'Designation is required'],
+    },
+    department: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Department',
+        required: [true, 'Department is required'],
+    },
+    casualLeavesUsed: {
+        type: Number,
+        default: 0,
+    },
+    sickLeavesUsed: {
+        type: Number,
+        default: 0,
+    },
 });
 
 const EmployeeModel =
-  mongoose.models.Employee ||
-  mongoose.model<Employee>('Employee', EmployeeSchema);
+    mongoose.models.Employee ||
+    mongoose.model<Employee>('Employee', EmployeeSchema);
 
 export default EmployeeModel;
